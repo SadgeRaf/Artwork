@@ -3,12 +3,14 @@
 import Link from 'next/link'
 import React from 'react'
 import { useAuth } from '../app/hooks/useAuth'
+import Logo from './Logo'
+import NavLink from './buttons/NavLink'
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth()
 
   return (
-    <div className="navbar bg-base-100 shadow-sm sticky top-0 z-50">
+    <div className="navbar bg-base-100/10 shadow-sm sticky top-0 z-50">
       <div className="navbar-start">
         <div className="dropdown">
           <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
@@ -19,21 +21,21 @@ export default function Navbar() {
           <ul
             tabIndex={0}
             className="menu menu-sm dropdown-content bg-base-100 rounded-box z-50 mt-3 w-52 p-2 shadow">
-            <li><Link href='/'>Home</Link></li>
-            <li><Link href='/about'>About</Link></li>
-            <li><Link href='/gallery'>Gallery</Link></li>
-            <li><Link href='/commission'>Commission</Link></li>
+            <li><NavLink href='/'>Home</NavLink></li>
+            <li><NavLink href='/about'>About</NavLink></li>
+            <li><NavLink href='/gallery'>Gallery</NavLink></li>
+            <li><NavLink href='/commission'>Commission</NavLink></li>
           </ul>
         </div>
-        <Link href='/' className="btn btn-ghost text-xl">ArtGallery</Link>
+        <Logo></Logo>
       </div>
       
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
-          <li><Link href='/'>Home</Link></li>
-          <li><Link href='/about'>About</Link></li>
-          <li><Link href='/gallery'>Gallery</Link></li>
-          <li><Link href='/commission'>Commission</Link></li>
+          <li><NavLink href='/'>Home</NavLink></li>
+            <li><NavLink href='/about'>About</NavLink></li>
+            <li><NavLink href='/gallery'>Gallery</NavLink></li>
+            <li><NavLink href='/commission'>Commission</NavLink></li>
         </ul>
       </div>
       

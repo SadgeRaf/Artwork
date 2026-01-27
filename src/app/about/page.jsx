@@ -2,6 +2,9 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaPalette, FaAward, FaHeart, FaInstagram, FaTwitter, FaArtstation } from 'react-icons/fa'
+export const  metadata = {
+  title: "about",
+};
 
 export default function About() {
   const artistBio = [
