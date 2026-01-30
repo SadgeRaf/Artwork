@@ -34,7 +34,7 @@ export default function AboutSection() {
             {/* Main Image */}
             <div className="relative z-10 overflow-hidden rounded-2xl shadow-2xl">
               <Image 
-                src="/artist-studio.jpg" 
+                src="/pfp.png" 
                 alt="Artist in Studio" 
                 width={600} 
                 height={500}

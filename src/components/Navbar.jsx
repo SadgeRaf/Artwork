@@ -24,6 +24,7 @@ export default function Navbar() {
             <li><NavLink href='/'>Home</NavLink></li>
             <li><NavLink href='/about'>About</NavLink></li>
             <li><NavLink href='/gallery'>Gallery</NavLink></li>
+            
             <li><NavLink href='/commission'>Commission</NavLink></li>
           </ul>
         </div>

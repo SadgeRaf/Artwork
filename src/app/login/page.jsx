@@ -1,6 +1,7 @@
 "use client"
 
 import React from 'react'
+import { signIn } from "next-auth/react"
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -15,7 +16,7 @@ export default function Login() {
     e.preventDefault()
     setError('')
     setIsLoading(true)
-
+    signIn()
 
     if (email === 'admin@gmail.com' && password === 'monsterwhite') {
       document.cookie = `auth=true; path=/`
@@ -86,11 +87,12 @@ export default function Login() {
             <div className="form-control mt-6">
               <button 
                 type="submit" 
-                className={`btn btn-primary ${isLoading ? 'loading' : ''}`}
+                className={`btn btn-primary ${isLoading ? 'loading' : ''} w-full`}
                 disabled={isLoading}
               >
                 {isLoading ? 'Logging in...' : 'Login'}
               </button>
+              <button className='btn btn-primary w-full mt-4'>Google Sign in</button>
             </div>
           </form>
 

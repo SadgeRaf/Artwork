@@ -3,6 +3,7 @@ const dbname = process.env.DBNAME;
 
 const collections = {
     ARTWORKS: 'artworks',
+    COMMISSIONS: 'commissions'
 }
 
 import { MongoClient, ServerApiVersion } from 'mongodb';

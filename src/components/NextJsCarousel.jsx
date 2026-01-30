@@ -15,6 +15,7 @@ const NextJsCarousel = () => {
                 stopOnHover={false}
                 emulateTouch={true}
                 swipeable={true}
+                showThumbs={false}
             >
                 <div>
                     <Image src="/3.png" alt="image1" width={300} height={300} />

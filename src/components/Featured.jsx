@@ -2,7 +2,8 @@ import React from 'react'
 import ArtworkCard from './cards/ArtworkCard';
 
 const getArtwork = async () => {
-  const res = await fetch("http://localhost:3000/api/featuredArtwork")
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+  const res = await fetch(`${baseUrl}/api/featuredArtwork`)
   return await res.json();
 }
 
