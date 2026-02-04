@@ -2,8 +2,19 @@ import React from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaPalette, FaAward, FaHeart, FaInstagram, FaTwitter, FaArtstation } from 'react-icons/fa'
-export const  metadata = {
-  title: "about",
+export const metadata = {
+  title: "About Raf - Digital Artist & Illustrator",
+  description: "Learn about Raf, a passionate digital artist with 8+ years of experience in creating captivating visual stories, specializing in portraits, character design, and anime-style art.",
+  keywords: ["about artist", "digital artist biography", "art experience", "professional illustrator", "anime artist", "character designer"],
+  openGraph: {
+    title: "About Raf - Digital Artist & Illustrator",
+    description: "Learn about Raf, a passionate digital artist with 8+ years of experience in creating captivating visual stories and custom commissions.",
+    images: ['/og-about.jpg'],
+  },
+  twitter: {
+    title: "About Raf - Digital Artist & Illustrator",
+    description: "Learn about Raf, a passionate digital artist with 8+ years of experience in creating captivating visual stories.",
+  },
 };
 
 export default function About() {

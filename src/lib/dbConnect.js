@@ -1,9 +1,10 @@
 const uri = process.env.MONGODB_URI;
 const dbname = process.env.DBNAME;
 
-const collections = {
+export const collections = {
     ARTWORKS: 'artworks',
-    COMMISSIONS: 'commissions'
+    COMMISSIONS: 'commissions',
+    USERS: 'users'
 }
 
 import { MongoClient, ServerApiVersion } from 'mongodb';

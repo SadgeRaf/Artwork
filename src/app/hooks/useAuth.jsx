@@ -1,45 +1,35 @@
+// hooks/useAuth.js
 "use client"
 
+import { useSession, signOut } from "next-auth/react"
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 export function useAuth() {
+  const { data: session, status } = useSession()
   const router = useRouter()
-  const [isAuth, setIsAuth] = useState(false)
 
-  // Check auth on mount and listen for changes
-  useEffect(() => {
-    const checkAuth = () => {
-      if (typeof document === 'undefined') return false
-      const isAuthenticated = document.cookie.includes('auth=true')
-      setIsAuth(isAuthenticated)
-      return isAuthenticated
-    }
-
-    checkAuth()
-    
-    // Poll for cookie changes (simple approach)
-    const interval = setInterval(checkAuth, 1000)
-    
-    return () => clearInterval(interval)
-  }, [])
-
-  const logout = () => {
-    document.cookie = 'auth=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;'
-    setIsAuth(false)
+  const logout = async () => {
+    await signOut({ redirect: false })
+    router.push('/')
   }
 
-  return { isAuthenticated: isAuth, logout }
+  return { 
+    isAuthenticated: status === "authenticated",
+    isLoading: status === "loading",
+    user: session?.user,
+    logout
+  }
 }
 
 // Hook to protect pages
 export function useRequireAuth() {
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, isLoading } = useAuth()
   const router = useRouter()
 
   useEffect(() => {
-    if (!isAuthenticated) {
+    if (!isLoading && !isAuthenticated) {
       router.push('/login')
     }
-  }, [isAuthenticated, router])
+  }, [isAuthenticated, isLoading, router])
 }

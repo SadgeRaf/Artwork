@@ -7,6 +7,76 @@ import ArtworkDetailSkeleton from '../../../components/skeleton/artworkDetailSke
 // Force dynamic rendering
 export const dynamic = 'force-dynamic'
 
+// Generate metadata for individual artwork pages
+export async function generateMetadata({ params }) {
+  const { id } = await params;
+  
+  try {
+    // Use relative URL for internal API calls in production
+    const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    
+    const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
+      cache: 'no-store'
+    })
+    
+    if (!res.ok) {
+      return {
+        title: 'Artwork Not Found',
+        description: 'The requested artwork could not be found.',
+      }
+    }
+    
+    const artwork = await res.json()
+    
+    if (!artwork) {
+      return {
+        title: 'Artwork Not Found',
+        description: 'The requested artwork could not be found.',
+      }
+    }
+    
+    return {
+      title: `${artwork.title || 'Untitled Artwork'} - ${artwork.category || 'Digital Art'}`,
+      description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf. ${artwork.category ? `A beautiful ${artwork.category.toLowerCase()} piece` : 'A stunning digital artwork'} available for viewing in the gallery.`,
+      keywords: [
+        artwork.title,
+        artwork.category,
+        ...(artwork.tags || []),
+        'digital art',
+        'artwork',
+        'illustration',
+        'Raf artist'
+      ].filter(Boolean),
+      openGraph: {
+        title: `${artwork.title || 'Untitled Artwork'} | Rafs Artworks`,
+        description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf.`,
+        images: [
+          {
+            url: artwork.image || '/og-artwork.jpg',
+            width: 1200,
+            height: 630,
+            alt: artwork.title || 'Artwork by Raf',
+          },
+        ],
+        type: 'article',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: `${artwork.title || 'Untitled Artwork'} | Rafs Artworks`,
+        description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf.`,
+        images: [artwork.image || '/og-artwork.jpg'],
+      },
+    }
+  } catch (error) {
+    return {
+      title: 'Artwork - Rafs Artworks',
+      description: 'View artwork from Raf\'s digital art portfolio.',
+    }
+  }
+}
+
 // Enhanced error handling component
 const ArtworkError = ({ message }) => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -25,31 +95,45 @@ const ArtworkError = ({ message }) => (
 );
 
 const getArtwork = async (id) => {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-  const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
-    cache: 'force-cache',
-    next: { revalidate: 3600 }, // Cache for 1 hour
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+  try {
+    // Use relative URL for internal API calls in production
+    const baseUrl = process.env.VERCEL_URL 
+        ? `https://${process.env.VERCEL_URL}` 
+        : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
+    
+    const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
+      cache: 'no-store', // Ensure fresh data
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
-  if (!res.ok) {
-    return getFallbackArtwork(id);
+    if (!res.ok) {
+      return {
+        _id: id,
+        title: "Loading...",
+        slug: "loading",
+        category: "Unknown",
+        description: "Artwork data is loading...",
+        image: "/placeholder.jpg",
+        tags: []
+      };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching artwork:', error)
+    return {
+      _id: id,
+      title: "Loading...",
+      slug: "loading",
+      category: "Unknown",
+      description: "Artwork data is loading...",
+      image: "/placeholder.jpg",
+      tags: []
+    };
   }
-
-  const getFallbackArtwork = (id) => ({
-    _id: id,
-    title: "Loading...",
-    slug: "loading",
-    category: "Unknown",
-    description: "Artwork data is loading...",
-    image: "/placeholder.jpg",
-    tags: []
-  });
-
-  const data = await res.json();
-  return data;
 }
 
 const Page = async ({ params }) => {
