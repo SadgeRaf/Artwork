@@ -4,7 +4,6 @@ import { dbConnect } from "../../../lib/dbConnect"
 const artworkCollection = dbConnect("artworks")
 
 export async function GET(request){
-    // No auth required for viewing artworks - this is a public gallery
     const result = await artworkCollection.find().toArray();
     return Response.json(result);
 }

@@ -2,12 +2,9 @@ import { requireAuth } from "../../../../lib/auth-utils";
 import { dbConnect, collections } from "../../../../lib/dbConnect";
 import bcrypt from 'bcryptjs';
 
-// Get user profile
 export async function GET(request) {
     try {
         const { user } = await requireAuth();
-
-        // Remove sensitive data
         const { password, ...userProfile } = user;
 
         return Response.json({

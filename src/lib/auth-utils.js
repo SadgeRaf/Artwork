@@ -8,8 +8,7 @@ export async function requireAuth() {
     if (!session) {
         throw new Error('Unauthorized');
     }
-    
-    // Get user from database to ensure they still exist and get latest role
+
     const user = await dbConnect(collections.USERS).findOne({ 
         email: session.user.email 
     });

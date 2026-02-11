@@ -1,3 +1,4 @@
+import { error } from "console";
 import { requireAuth } from "../../../lib/auth-utils";
 import { dbConnect } from "../../../lib/dbConnect";
 
@@ -5,16 +6,20 @@ const commissionCollection = dbConnect('commissions')
 
 export async function POST(request) {
     const query = await request.json();
+    const { user } = requireAuth();
 
-    const commissionData = {
-        ...query,
-        createdAt: new Date(),
-        status: 'pending',
+    if (!user) {
+        return Response.json({ error: "login first"}, { status: 403 })
+    } else {
+        const commissionData = {
+            ...query,
+            createdAt: new Date(),
+            status: 'pending',
+        }
+        const result = await commissionCollection.insertOne(commissionData)
+        return Response.json(result);
     }
 
-    const result = await commissionCollection.insertOne(commissionData)
-
-    return Response.json(result);
 }
 
 export async function GET(request) {

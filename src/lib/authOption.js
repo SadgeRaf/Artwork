@@ -1,12 +1,12 @@
 
+
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google"
-import { loginUser } from "../actions/server/auth";
+import { loginUser, postGoogleUser } from "../actions/server/auth";
 
 export const authOptions = {
-  // Configure one or more authentication providers
   providers: [
-     CredentialsProvider({
+    CredentialsProvider({
       name: 'Credentials',
       credentials: {
         email: { label: "Email", type: "email" },
@@ -17,17 +17,6 @@ export const authOptions = {
           if (!credentials?.email || !credentials?.password) {
             return null;
           }
-
-          // Test credentials for development
-          if (credentials.email === 'admin@gmail.com' && credentials.password === 'monsterwhite') {
-            return {
-              id: 'test-admin-id',
-              email: 'admin@gmail.com',
-              name: 'Admin User',
-              role: 'admin'
-            };
-          }
-
           // Try to authenticate with database
           const user = await loginUser({
             email: credentials.email,
@@ -35,7 +24,6 @@ export const authOptions = {
           });
 
           if (user) {
-            // Return user object with required fields
             return {
               id: user._id.toString(),
               email: user.email,
@@ -43,7 +31,7 @@ export const authOptions = {
               role: user.role
             };
           }
-          
+
           return null;
         } catch (error) {
           console.error("Auth error:", error);
@@ -51,7 +39,7 @@ export const authOptions = {
         }
       }
     }),
-    // Google Provider (only if environment variables are set)
+    // Google Provider 
     ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET ? [
       GoogleProvider({
         clientId: process.env.GOOGLE_CLIENT_ID,
@@ -61,19 +49,41 @@ export const authOptions = {
   ],
   pages: {
     signIn: '/login',
-    // Remove error redirect to prevent loops
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async signIn({ user, account, profile }) {
+      if (account.provider === 'google') {
+        try {
+          const dbUser = await postGoogleUser({
+            email: user.email,
+            name: user.name,
+            image: user.image
+          });
+
+          if (dbUser) {
+            user.role = dbUser.role || 'user';
+            user.id = dbUser._id || dbUser.insertedId;
+            return true;
+          }
+          return false;
+        } catch (error) {
+          console.error('Google sign in error:', error);
+          return false;
+        }
+      }
+      return true;
+    },
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = user.role;
+        token.role = user.role || 'user';
+        token.id = user.id;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
-        session.user.id = token.sub;
-        session.user.role = token.role;
+        session.user.id = token.sub || token.id;
+        session.user.role = token.role || 'user';
       }
       return session;
     },
