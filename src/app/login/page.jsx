@@ -27,24 +27,13 @@ export default function Login() {
         redirect: false
       })
 
-      console.log('SignIn result:', result)
-
       // Check if there's a real error (not just "undefined" string)
       if (result?.error && result.error !== "undefined") {
-        console.log('SignIn error:', result.error)
         setError('Invalid email or password')
       } else if (result?.ok) {
-        console.log('SignIn successful, redirecting...')
-        // Check if user is actually logged in
-        const session = await fetch('/api/auth/session').then(r => r.json())
-        if (session?.user) {
-          router.push(callbackUrl)
-          router.refresh()
-        } else {
-          setError('Authentication failed. Please try again.')
-        }
+        router.push(callbackUrl)
+        router.refresh()
       } else {
-        console.log('Unexpected result:', result)
         setError('Something went wrong. Please try again.')
       }
     } catch (error) {

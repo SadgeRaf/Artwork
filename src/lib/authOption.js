@@ -14,16 +14,12 @@ export const authOptions = {
       },
       async authorize(credentials, req) {
         try {
-          console.log("Auth attempt with credentials:", { email: credentials?.email, hasPassword: !!credentials?.password });
-          
           if (!credentials?.email || !credentials?.password) {
-            console.log("Missing credentials");
             return null;
           }
 
           // Test credentials for development
           if (credentials.email === 'admin@gmail.com' && credentials.password === 'monsterwhite') {
-            console.log("Test credentials matched");
             return {
               id: 'test-admin-id',
               email: 'admin@gmail.com',
@@ -32,7 +28,6 @@ export const authOptions = {
             };
           }
 
-          console.log("Trying database authentication");
           // Try to authenticate with database
           const user = await loginUser({
             email: credentials.email,
@@ -40,7 +35,6 @@ export const authOptions = {
           });
 
           if (user) {
-            console.log("Database user found:", { id: user._id, email: user.email });
             // Return user object with required fields
             return {
               id: user._id.toString(),
@@ -50,7 +44,6 @@ export const authOptions = {
             };
           }
           
-          console.log("No user found");
           return null;
         } catch (error) {
           console.error("Auth error:", error);
@@ -72,14 +65,12 @@ export const authOptions = {
   },
   callbacks: {
     async jwt({ token, user }) {
-      console.log("JWT callback - token:", token, "user:", user);
       if (user) {
         token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      console.log("Session callback - session:", session, "token:", token);
       if (token) {
         session.user.id = token.sub;
         session.user.role = token.role;
