@@ -1,81 +1,10 @@
-import React from 'react';
+"use client"
+
+import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Suspense } from 'react';
 import ArtworkDetailSkeleton from '../../../components/skeleton/artworkDetailSkeleton';
-
-// Force dynamic rendering
-export const dynamic = 'force-dynamic'
-
-// Generate metadata for individual artwork pages
-export async function generateMetadata({ params }) {
-  const { id } = await params;
-  
-  try {
-    // Use relative URL for internal API calls in production
-    const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
-    const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
-      cache: 'no-store'
-    })
-    
-    if (!res.ok) {
-      return {
-        title: 'Artwork Not Found',
-        description: 'The requested artwork could not be found.',
-      }
-    }
-    
-    const artwork = await res.json()
-    
-    if (!artwork) {
-      return {
-        title: 'Artwork Not Found',
-        description: 'The requested artwork could not be found.',
-      }
-    }
-    
-    return {
-      title: `${artwork.title || 'Untitled Artwork'} - ${artwork.category || 'Digital Art'}`,
-      description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf. ${artwork.category ? `A beautiful ${artwork.category.toLowerCase()} piece` : 'A stunning digital artwork'} available for viewing in the gallery.`,
-      keywords: [
-        artwork.title,
-        artwork.category,
-        ...(artwork.tags || []),
-        'digital art',
-        'artwork',
-        'illustration',
-        'Raf artist'
-      ].filter(Boolean),
-      openGraph: {
-        title: `${artwork.title || 'Untitled Artwork'} | Rafs Artworks`,
-        description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf.`,
-        images: [
-          {
-            url: artwork.image || '/og-artwork.jpg',
-            width: 1200,
-            height: 630,
-            alt: artwork.title || 'Artwork by Raf',
-          },
-        ],
-        type: 'article',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: `${artwork.title || 'Untitled Artwork'} | Rafs Artworks`,
-        description: artwork.description || `View ${artwork.title || 'this artwork'} by Raf.`,
-        images: [artwork.image || '/og-artwork.jpg'],
-      },
-    }
-  } catch (error) {
-    return {
-      title: 'Artwork - Rafs Artworks',
-      description: 'View artwork from Raf\'s digital art portfolio.',
-    }
-  }
-}
+import { fadeInUp, fadeInLeft, fadeInRight, scaleIn } from '../../../lib/animations';
 
 // Enhanced error handling component
 const ArtworkError = ({ message }) => (
@@ -85,7 +14,7 @@ const ArtworkError = ({ message }) => (
       <h1 className="text-2xl font-bold text-gray-800 mb-2">Oops! Something went wrong</h1>
       <p className="text-gray-600 mb-6">{message}</p>
       <Link
-        href="/artworks"
+        href="/gallery"
         className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
       >
         Browse All Artworks
@@ -94,57 +23,49 @@ const ArtworkError = ({ message }) => (
   </div>
 );
 
-const getArtwork = async (id) => {
-  try {
-    // Use relative URL for internal API calls in production
-    const baseUrl = process.env.VERCEL_URL 
-        ? `https://${process.env.VERCEL_URL}` 
-        : process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000'
-    
-    const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
-      cache: 'no-store', // Ensure fresh data
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-
-    if (!res.ok) {
-      return {
-        _id: id,
-        title: "Loading...",
-        slug: "loading",
-        category: "Unknown",
-        description: "Artwork data is loading...",
-        image: "/placeholder.jpg",
-        tags: []
-      };
-    }
-
-    const data = await res.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching artwork:', error)
-    return {
-      _id: id,
-      title: "Loading...",
-      slug: "loading",
-      category: "Unknown",
-      description: "Artwork data is loading...",
-      image: "/placeholder.jpg",
-      tags: []
+const Page = ({ params }) => {
+  const imageRef = useRef(null);
+  const detailsRef = useRef(null);
+  const descRef = useRef(null);
+  const tagsRef = useRef(null);
+  
+  const [artwork, setArtwork] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchArtwork = async () => {
+      const { id } = await params;
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const res = await fetch(`${baseUrl}/api/artwork/${id}`, {
+          cache: 'no-store',
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          setArtwork(data);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-  }
-}
-
-const Page = async ({ params }) => {
-  const { id } = await params;
-
-  let artwork;
-
-  try {
-    artwork = await getArtwork(id);
-  } catch (error) {
-    return <ArtworkError message={error instanceof Error ? error.message : 'Failed to load artwork'} />;
+    
+    fetchArtwork();
+  }, [params]);
+  
+  useEffect(() => {
+    if (!loading && artwork) {
+      if (imageRef.current) fadeInLeft(imageRef.current);
+      if (detailsRef.current) fadeInRight(detailsRef.current, 0.2);
+      if (descRef.current) scaleIn(descRef.current, 0.4);
+      if (tagsRef.current) fadeInUp(tagsRef.current, 0.6);
+    }
+  }, [loading, artwork]);
+  
+  if (loading) {
+    return <ArtworkDetailSkeleton />;
   }
 
   // If no artwork found
@@ -153,7 +74,6 @@ const Page = async ({ params }) => {
   }
 
   return (
-    <Suspense fallback={<ArtworkDetailSkeleton></ArtworkDetailSkeleton>}>
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
         <div className="max-w-7xl mx-auto">
           {/* Breadcrumb Navigation */}
@@ -166,8 +86,8 @@ const Page = async ({ params }) => {
               </li>
               <li className="text-gray-400">/</li>
               <li>
-                <Link href="/artworks" className="hover:text-blue-600 transition-colors">
-                  Artworks
+                <Link href="/gallery" className="hover:text-blue-600 transition-colors">
+                  Gallery
                 </Link>
               </li>
               <li className="text-gray-400">/</li>
@@ -177,7 +97,7 @@ const Page = async ({ params }) => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             {/* Left Column: Artwork Image */}
-            <div className="space-y-6">
+            <div ref={imageRef} className="space-y-6">
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden group">
                 <div className="relative aspect-square">
                   <Image
@@ -188,14 +108,6 @@ const Page = async ({ params }) => {
                     sizes="(max-width: 768px) 100vw, 50vw"
                     priority
                   />
-                  {/* You can add a sold out banner if you have that data */}
-                  {/* {!artwork.isAvailable && (
-                  <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                    <span className="text-white text-2xl font-bold bg-red-600 px-6 py-3 rounded-lg">
-                      Sold Out
-                    </span>
-                  </div>
-                )} */}
                 </div>
               </div>
 
@@ -222,7 +134,7 @@ const Page = async ({ params }) => {
             </div>
 
             {/* Right Column: Artwork Details */}
-            <div className="space-y-8">
+            <div ref={detailsRef} className="space-y-8">
               {/* Header */}
               <div>
                 <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
@@ -235,32 +147,10 @@ const Page = async ({ params }) => {
                     {artwork.category || 'Uncategorized'}
                   </span>
                 </div>
-
-                {/* Optional Price Section - Add if you have price data */}
-                {/* {artwork.price && (
-                <div className="flex items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6">
-                  <div>
-                    <div className="text-sm text-gray-500">Price</div>
-                    <div className="text-3xl font-bold text-gray-900">
-                      ${artwork.price.toLocaleString()}
-                    </div>
-                    {artwork.isAvailable && (
-                      <div className="text-sm text-green-600 font-medium mt-2">
-                        ✓ Available for purchase
-                      </div>
-                    )}
-                  </div>
-                  {artwork.isAvailable && (
-                    <button className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transition-all transform hover:scale-105 shadow-lg">
-                      Add to Cart
-                    </button>
-                  )}
-                </div>
-              )} */}
               </div>
 
               {/* Description */}
-              <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div ref={descRef} className="bg-white rounded-2xl shadow-xl p-8">
                 <h2 className="text-2xl font-bold text-gray-900 mb-6">About This Artwork</h2>
                 <div className="prose prose-lg max-w-none text-gray-700">
                   <p className="leading-relaxed">
@@ -270,14 +160,14 @@ const Page = async ({ params }) => {
               </div>
 
               {/* Tags */}
-              <div className="bg-white rounded-2xl shadow-xl p-8">
+              <div ref={tagsRef} className="bg-white rounded-2xl shadow-xl p-8">
                 <h3 className="text-xl font-semibold text-gray-900 mb-4">Tags</h3>
                 <div className="flex flex-wrap gap-3">
                   {artwork.tags && artwork.tags.length > 0 ? (
                     artwork.tags.map((tag, index) => (
                       <Link
                         key={index}
-                        href={`/artworks?tag=${tag}`}
+                        href={`/gallery?query=${tag}`}
                         className="px-4 py-2 bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 rounded-full text-sm font-medium hover:from-gray-200 hover:to-gray-300 transition-all hover:text-gray-900"
                       >
                         #{tag}
@@ -339,7 +229,7 @@ const Page = async ({ params }) => {
           {/* Back to Gallery Button */}
           <div className="mt-12 text-center">
             <Link
-              href="/"
+              href="/gallery"
               className="inline-flex items-center gap-2 bg-white text-gray-700 hover:text-gray-900 hover:shadow-lg px-6 py-3 rounded-lg font-medium transition-all border border-gray-200 hover:border-gray-300"
             >
               <span>←</span>
@@ -348,7 +238,6 @@ const Page = async ({ params }) => {
           </div>
         </div>
       </div>
-    </Suspense>
   );
 };
 

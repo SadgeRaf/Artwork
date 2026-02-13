@@ -1,11 +1,22 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { FaArrowRight, FaPalette, FaLightbulb, FaHeart } from 'react-icons/fa'
+import { fadeInUp, fadeInLeft, fadeInRight, staggerChildren } from '../lib/animations'
 
 export default function AboutSection() {
+  const imageRef = useRef(null);
+  const contentRef = useRef(null);
+  const featuresRef = useRef(null);
+  
+  useEffect(() => {
+    if (imageRef.current) fadeInLeft(imageRef.current);
+    if (contentRef.current) fadeInRight(contentRef.current, 0.2);
+    if (featuresRef.current) staggerChildren(featuresRef.current, '.feature-item', 0.4);
+  }, []);
+  
   const features = [
     {
       icon: <FaPalette className="text-2xl" />,
@@ -30,7 +41,7 @@ export default function AboutSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           
           {/* Left Column - Image & Stats */}
-          <div className="relative">
+          <div ref={imageRef} className="relative">
             {/* Main Image */}
             <div className="relative z-10 overflow-hidden rounded-2xl shadow-2xl">
               <Image 
@@ -44,7 +55,7 @@ export default function AboutSection() {
               
               {/* Overlay Text */}
               <div className="absolute bottom-8 left-8 text-white">
-                <div className="text-3xl font-bold">8+ Years</div>
+                <div className="text-3xl font-bold">3+ Years</div>
                 <div className="text-lg">of Artistic Excellence</div>
               </div>
             </div>
@@ -56,22 +67,22 @@ export default function AboutSection() {
             {/* Quick Stats */}
             <div className="grid grid-cols-3 gap-4 mt-8">
               <div className="text-center p-4 bg-base-200 rounded-lg">
-                <div className="text-2xl font-bold text-primary">300+</div>
+                <div className="text-2xl font-bold text-primary">50+</div>
                 <div className="text-sm">Artworks</div>
               </div>
               <div className="text-center p-4 bg-base-200 rounded-lg">
-                <div className="text-2xl font-bold text-secondary">150+</div>
+                <div className="text-2xl font-bold text-secondary">10+</div>
                 <div className="text-sm">Happy Clients</div>
               </div>
               <div className="text-center p-4 bg-base-200 rounded-lg">
-                <div className="text-2xl font-bold text-accent">25+</div>
+                <div className="text-2xl font-bold text-accent">2+</div>
                 <div className="text-sm">Awards</div>
               </div>
             </div>
           </div>
 
           {/* Right Column - Content */}
-          <div>
+          <div ref={contentRef}>
             {/* Section Header */}
             <div className="mb-6">
               <span className="text-primary font-semibold">ABOUT THE ARTIST</span>
@@ -96,9 +107,9 @@ export default function AboutSection() {
             </div>
 
             {/* Features */}
-            <div className="space-y-4 mb-10">
+            <div ref={featuresRef} className="space-y-4 mb-10">
               {features.map((feature, index) => (
-                <div key={index} className="flex items-start gap-4">
+                <div key={index} className="flex items-start gap-4 feature-item">
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
                     {feature.icon}
                   </div>
@@ -128,42 +139,125 @@ export default function AboutSection() {
               </Link>
             </div>
 
-            {/* Quick Links */}
-            <div className="mt-12 pt-8 border-t border-base-300">
-              <p className="text-base-content/60 mb-4">Also check out:</p>
-              <div className="flex flex-wrap gap-4">
-                <Link 
-                  href="/gallery" 
-                  className="link link-primary hover:underline"
-                >
-                  View Full Gallery
-                </Link>
-                <Link 
-                  href="/process" 
-                  className="link link-primary hover:underline"
-                >
-                  See My Process
-                </Link>
-                <Link 
-                  href="/testimonials" 
-                  className="link link-primary hover:underline"
-                >
-                  Client Testimonials
-                </Link>
-              </div>
-            </div>
+           
           </div>
         </div>
 
         {/* Philosophy Banner */}
-        <div className="mt-20 bg-gradient-to-r from-primary to-secondary rounded-2xl p-8 text-primary-content">
-          <div className="text-center max-w-3xl mx-auto">
-            <blockquote className="text-2xl italic mb-6">
-              "Art is not what you see, but what you make others see."
-            </blockquote>
-            <div className="font-semibold">— My Artistic Philosophy</div>
+        <div className="mt-20 relative overflow-hidden">
+  {/* Animated gradient background */}
+  <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-primary rounded-2xl animate-gradient bg-[length:200%_200%]"></div>
+  
+  {/* Glassmorphism overlay */}
+  <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px] rounded-2xl"></div>
+  
+  {/* Content */}
+  <div className="relative bg-gradient-to-r from-primary/90 to-secondary/90 rounded-2xl p-8 md:p-12 text-primary-content transform transition-all duration-700 hover:scale-[1.02] group">
+    
+    {/* Animated floating particles */}
+    <div className="absolute inset-0 overflow-hidden rounded-2xl">
+      <div className="absolute -top-10 -left-10 w-40 h-40 bg-white/5 rounded-full animate-blob"></div>
+      <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/5 rounded-full animate-blob animation-delay-2000"></div>
+      <div className="absolute top-1/2 left-1/2 w-20 h-20 bg-white/5 rounded-full animate-blob animation-delay-4000"></div>
+    </div>
+    
+    {/* Quote container with staggered animation */}
+    <div className="text-center max-w-3xl mx-auto relative z-10">
+      {/* Opening quote mark */}
+      <div className="text-6xl text-white/30 font-serif absolute -top-4 -left-4 animate-pulse">"</div>
+      
+      {/* Quote with typing effect */}
+      <div className="relative">
+        <blockquote className="text-2xl md:text-3xl lg:text-4xl italic font-light leading-relaxed animate-fadeInQuote">
+          "Art is not what you see, but what you make others see."
+        </blockquote>
+        
+        {/* Decorative line */}
+        <div className="w-24 h-1 bg-white/50 mx-auto my-6 rounded-full animate-expandWidth"></div>
+        
+        {/* Attribution with fade and slide */}
+        <div className="space-y-2">
+          <div className="font-semibold text-lg md:text-xl tracking-wide animate-slideUp">
+            — My Artistic Philosophy
+          </div>
+          
+          {/* Subtle signature effect */}
+          <div className="text-white/60 text-sm font-mono animate-fadeIn delay-500">
+            Rafs Artworks
           </div>
         </div>
+      </div>
+      
+      {/* Closing quote mark */}
+      <div className="text-6xl text-white/30 font-serif absolute -bottom-4 -right-4 animate-pulse">"</div>
+    </div>
+  </div>
+
+  <style jsx>{`
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    .animate-gradient {
+      animation: gradient 8s ease infinite;
+    }
+    
+    @keyframes blob {
+      0%, 100% { transform: translate(0px, 0px) scale(1); }
+      33% { transform: translate(30px, -30px) scale(1.1); }
+      66% { transform: translate(-20px, 20px) scale(0.9); }
+    }
+    
+    .animate-blob {
+      animation: blob 7s infinite;
+    }
+    
+    .animation-delay-2000 {
+      animation-delay: 2s;
+    }
+    
+    .animation-delay-4000 {
+      animation-delay: 4s;
+    }
+    
+    @keyframes fadeInQuote {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-fadeInQuote {
+      animation: fadeInQuote 1.2s ease-out;
+    }
+    
+    @keyframes expandWidth {
+      0% { width: 0; opacity: 0; }
+      100% { width: 96px; opacity: 1; }
+    }
+    
+    .animate-expandWidth {
+      animation: expandWidth 0.8s ease-out 0.3s both;
+    }
+    
+    @keyframes slideUp {
+      0% { opacity: 0; transform: translateY(20px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-slideUp {
+      animation: slideUp 0.6s ease-out 0.6s both;
+    }
+    
+    .animate-fadeIn {
+      animation: fadeInQuote 0.8s ease-out 0.9s both;
+    }
+    
+    .delay-500 {
+      animation-delay: 0.9s;
+    }
+  `}</style>
+</div>
       </div>
     </section>
   )

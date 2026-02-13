@@ -1,9 +1,18 @@
 // app/commissions/page.js
 "use client"
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { fadeInUp, scaleIn } from '../../lib/animations';
 
 export default function CommissionPage() {
+  const formRef = useRef(null);
+  const titleRef = useRef(null);
+  
+  useEffect(() => {
+    if (titleRef.current) fadeInUp(titleRef.current);
+    if (formRef.current) scaleIn(formRef.current, 0.2);
+  }, []);
+  
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -62,7 +71,7 @@ export default function CommissionPage() {
     return (
     <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">Request a Commission</h1>
+        <h1 ref={titleRef} className="text-3xl font-bold text-gray-900 mb-8">Request a Commission</h1>
 
         {message && (
           <div className={`p-4 mb-6 rounded-lg ${message.includes('✓') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
@@ -70,7 +79,7 @@ export default function CommissionPage() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-6">
+        <form ref={formRef} onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">

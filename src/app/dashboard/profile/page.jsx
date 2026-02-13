@@ -1,7 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { toast } from 'react-toastify';
+import { fadeInUp, staggerChildren } from '../../../lib/animations';
 
 export default function ProfilePage() {
     const { data: session } = useSession();
@@ -15,12 +17,20 @@ export default function ProfilePage() {
     const [message, setMessage] = useState('');
     const [loading, setLoading] = useState(false);
     const [fetchingProfile, setFetchingProfile] = useState(true);
+    
+    const containerRef = useRef(null);
 
     useEffect(() => {
         if (session) {
             fetchProfile();
         }
     }, [session]);
+    
+    useEffect(() => {
+        if (!fetchingProfile && containerRef.current) {
+            fadeInUp(containerRef.current);
+        }
+    }, [fetchingProfile]);
 
     const fetchProfile = async () => {
         try {
@@ -57,7 +67,7 @@ export default function ProfilePage() {
 
         // Validate passwords match
         if (formData.newPassword && formData.newPassword !== formData.confirmPassword) {
-            setMessage('New passwords do not match');
+            toast.error('New passwords do not match');
             setLoading(false);
             return;
         }
@@ -84,7 +94,8 @@ export default function ProfilePage() {
             const data = await response.json();
 
             if (response.ok) {
-                setMessage('Profile updated successfully!');
+                toast.success('Profile updated successfully!');
+                setMessage('');
                 
                 // Clear password fields
                 setFormData(prev => ({
@@ -94,10 +105,12 @@ export default function ProfilePage() {
                     confirmPassword: ''
                 }));
             } else {
-                setMessage(`Error: ${data.error}`);
+                toast.error(data.error || 'Failed to update profile');
+                setMessage('');
             }
         } catch (error) {
-            setMessage(`Error: ${error.message}`);
+            toast.error(error.message || 'Failed to update profile');
+            setMessage('');
         } finally {
             setLoading(false);
         }
@@ -112,7 +125,7 @@ export default function ProfilePage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
+        <div ref={containerRef} className="max-w-2xl mx-auto space-y-6">
             <h2 className="text-2xl font-bold">Profile Settings</h2>
 
             {message && (

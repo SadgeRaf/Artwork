@@ -1,10 +1,9 @@
 import { Geist, Geist_Mono } from "next/font/google";
-import localFont from 'next/font/local'
 import "./globals.css";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { SessionProvider } from "next-auth/react";
 import { Providers } from "./Provider";
+import ToastProvider from "../components/ToastProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -74,10 +73,6 @@ export const metadata = {
   },
 };
 
-export const testFont = localFont({
-  src: './../fonts/ShortBaby-Mg2w.ttf',
-});
-
 export default function RootLayout({ children }) {
   const jsonLd = {
     '@context': 'https://schema.org',
@@ -124,6 +119,7 @@ export default function RootLayout({ children }) {
             </main>
             <Footer></Footer>
           </div>
+          <ToastProvider />
         </Providers>
       </body>
     </html>

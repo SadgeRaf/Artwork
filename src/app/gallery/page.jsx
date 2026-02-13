@@ -1,10 +1,11 @@
 "use client"
 
 import ArtworkCard from '../../components/cards/ArtworkCard';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import SearchBar from '../../components/searchbar/SearchBar';
 import { useSearchParams } from 'next/navigation';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { fadeInUp, staggerChildren } from '../../lib/animations';
 
 // Items per page for pagination
 const ITEMS_PER_PAGE = 4;
@@ -18,6 +19,19 @@ const Page = () => {
     const [page, setPage] = useState(1);
     const [filteredArtworks, setFilteredArtworks] = useState([]);
     const [displayedArtworks, setDisplayedArtworks] = useState([]);
+    
+    const titleRef = useRef(null);
+    const gridRef = useRef(null);
+    
+    useEffect(() => {
+        if (titleRef.current) fadeInUp(titleRef.current);
+    }, []);
+    
+    useEffect(() => {
+        if (!loading && gridRef.current && displayedArtworks.length > 0) {
+            staggerChildren(gridRef.current, '.artwork-card-item', 0.1);
+        }
+    }, [loading, displayedArtworks]);
 
     // Fetch all artworks once
     useEffect(() => {
@@ -106,7 +120,7 @@ const Page = () => {
 
     return (
         <div className="min-h-screen">
-            <h1 className='text-purple-500 font-extrabold flex justify-center mb-6 text-3xl'>My Works!!!</h1>
+            <h1 ref={titleRef} className='text-purple-500 font-extrabold flex justify-center mb-6 text-3xl'>My Works!!!</h1>
             
             <SearchBar />
             
@@ -142,9 +156,11 @@ const Page = () => {
             >
                 {/* Artworks Grid */}
                 {displayedArtworks.length > 0 ? (
-                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 mx-8 mb-8'>
+                    <div ref={gridRef} className='grid grid-cols-1 lg:grid-cols-2 gap-6 mx-8 mb-8'>
                         {displayedArtworks.map(artwork => (
-                            <ArtworkCard key={artwork._id} artwork={artwork} />
+                            <div key={artwork._id} className="artwork-card-item">
+                                <ArtworkCard artwork={artwork} />
+                            </div>
                         ))}
                     </div>
                 ) : !loading && (

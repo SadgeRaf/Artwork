@@ -1,12 +1,22 @@
-import React from 'react';
-import Image from 'next/image'; // If using Next.js
+"use client"
+
+import React, { useEffect, useRef } from 'react';
+import Image from 'next/image';
 import Link from 'next/link';
+import { hoverScale } from '../../lib/animations';
 
 const ArtworkCard = ({ artwork }) => {
+    const cardRef = useRef(null);
+    
+    useEffect(() => {
+        if (cardRef.current) {
+            hoverScale(cardRef.current);
+        }
+    }, []);
+    
     const { 
         _id, 
         title, 
-        slug, 
         category, 
         description, 
         image, 
@@ -14,86 +24,90 @@ const ArtworkCard = ({ artwork }) => {
     } = artwork;
 
     return (
-        <div className="artwork-card bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
-            {/* Image Section */}
-            <div className="relative h-64 w-full overflow-hidden">
-                {image ? (
-                    // If using Next.js Image component
-                    <Image 
-                        src={image} 
-                        alt={title} 
-                        fill
-                        className="object-cover"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    // If using regular img tag:
-                    // <img 
-                    //     src={image} 
-                    //     alt={title} 
-                    //     className="w-full h-full object-cover"
-                    // />
-                ) : (
-                    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-gray-400">No image</span>
-                    </div>
-                )}
+        <Link href={`/artwork/${_id}`} className="hover-3d my-12 mx-2 cursor-pointer block">
+            {/* 3D Card */}
+            <div ref={cardRef} className="card w-96 bg-black text-white bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)] bg-size-[4.95em_4.95em]">
                 
-                {/* Category Badge */}
-                <div className="absolute top-3 left-3">
-                    <span className="bg-black/70 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                        {category}
-                    </span>
-                </div>
-            </div>
+                {/* Image Section */}
+                <figure className="relative h-48 w-full">
+                    {image ? (
+                        <Image 
+                            src={image} 
+                            alt={title} 
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                            <span className="text-gray-500">No image</span>
+                        </div>
+                    )}
+                </figure>
 
-            {/* Content Section */}
-            <div className="p-5">
-                {/* Title */}
-                <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">
-                    {title}
-                </h3>
-                
-                {/* Description */}
-                <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {description}
-                </p>
-                
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-4">
-                    {tags?.map((tag, index) => (
-                        <span 
-                            key={index}
-                            className="inline-block bg-gray-100 text-gray-700 text-xs font-medium px-3 py-1 rounded-full"
-                        >
-                            #{tag}
-                        </span>
-                    ))}
-                </div>
-                
-                {/* View Details Button/Link */}
-                <div className="pt-4 border-t border-gray-100">
-                    <Link 
-                        href={`/artwork/${_id}`}
-                        className="inline-flex items-center text-blue-600 font-medium text-sm hover:text-blue-800 transition-colors"
-                    >
-                        View Details
-                        <svg 
-                            className="w-4 h-4 ml-1" 
-                            fill="none" 
-                            stroke="currentColor" 
-                            viewBox="0 0 24 24"
-                        >
-                            <path 
-                                strokeLinecap="round" 
-                                strokeLinejoin="round" 
-                                strokeWidth={2} 
-                                d="M14 5l7 7m0 0l-7 7m7-7H3" 
-                            />
-                        </svg>
-                    </Link>
+                {/* Card Body */}
+                <div className="card-body">
+                    {/* Header with Category */}
+                    <div className="flex justify-between mb-4">
+                        <div className="font-bold text-sm uppercase tracking-wider text-gray-300">
+                            {category}
+                        </div>
+                        <div className="text-5xl opacity-10">❁</div>
+                    </div>
+
+                    {/* Title */}
+                    <div className="text-xl font-bold mb-2 line-clamp-1">
+                        {title}
+                    </div>
+
+                    {/* Description */}
+                    <div className="text-sm opacity-70 mb-4 line-clamp-2">
+                        {description}
+                    </div>
+
+                    {/* Tags */}
+                    {tags && tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2 mb-4">
+                            {tags.slice(0, 3).map((tag, index) => (
+                                <span 
+                                    key={index}
+                                    className="text-xs bg-white/10 px-3 py-1 rounded-full"
+                                >
+                                    #{tag}
+                                </span>
+                            ))}
+                            {tags.length > 3 && (
+                                <span className="text-xs bg-white/10 px-3 py-1 rounded-full">
+                                    +{tags.length - 3}
+                                </span>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Card Footer - Mimicking bank card format */}
+                    <div className="flex justify-between items-end mt-2">
+                        <div>
+                            <div className="text-xs opacity-40">ARTWORK ID</div>
+                            <div className="font-mono text-sm">{_id.slice(-8).toUpperCase()}</div>
+                        </div>
+                        <div>
+                            <div className="text-xs opacity-40">VIEW</div>
+                            <div className="text-sm">DETAILS →</div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            {/* 8 empty divs needed for the 3D effect */}
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </Link>
     );
 };
 

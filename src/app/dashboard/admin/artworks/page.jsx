@@ -1,6 +1,8 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { toast } from 'react-toastify';
+import { fadeInUp, staggerChildren } from '../../../../lib/animations';
 
 export default function AdminArtworksPage() {
     const [artworks, setArtworks] = useState([]);
@@ -16,10 +18,18 @@ export default function AdminArtworksPage() {
     });
     const [submitting, setSubmitting] = useState(false);
     const [message, setMessage] = useState('');
+    
+    const gridRef = useRef(null);
 
     useEffect(() => {
         fetchArtworks();
     }, []);
+    
+    useEffect(() => {
+        if (!loading && gridRef.current) {
+            staggerChildren(gridRef.current, '.artwork-card');
+        }
+    }, [loading, artworks]);
 
     const fetchArtworks = async () => {
         try {
@@ -66,7 +76,8 @@ export default function AdminArtworksPage() {
             });
 
             if (response.ok) {
-                setMessage('Artwork added successfully!');
+                toast.success('Artwork added successfully!');
+                setMessage('');
                 setFormData({
                     title: '',
                     slug: '',
@@ -79,10 +90,12 @@ export default function AdminArtworksPage() {
                 fetchArtworks();
             } else {
                 const error = await response.json();
-                setMessage(`Error: ${error.error || 'Failed to add artwork'}`);
+                toast.error(error.error || 'Failed to add artwork');
+                setMessage('');
             }
         } catch (error) {
-            setMessage(`Error: ${error.message}`);
+            toast.error(error.message || 'Failed to add artwork');
+            setMessage('');
         } finally {
             setSubmitting(false);
         }
@@ -235,9 +248,9 @@ export default function AdminArtworksPage() {
             )}
 
             {/* Artworks Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {artworks.map((artwork) => (
-                    <div key={artwork._id} className="card bg-base-200 shadow-md">
+                    <div key={artwork._id} className="card bg-base-200 shadow-md artwork-card">
                         <figure className="aspect-square">
                             <img 
                                 src={artwork.image} 

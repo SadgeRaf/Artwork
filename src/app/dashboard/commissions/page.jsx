@@ -1,19 +1,28 @@
 "use client"
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSession } from 'next-auth/react';
+import { staggerChildren } from '../../../lib/animations';
 
 export default function MyCommissionsPage() {
     const { data: session } = useSession();
     const [commissions, setCommissions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
+    
+    const gridRef = useRef(null);
 
     useEffect(() => {
         if (session) {
             fetchCommissions();
         }
     }, [session]);
+    
+    useEffect(() => {
+        if (!loading && gridRef.current && commissions.length > 0) {
+            staggerChildren(gridRef.current, '.commission-card');
+        }
+    }, [loading, commissions]);
 
     const fetchCommissions = async () => {
         try {
@@ -74,9 +83,9 @@ export default function MyCommissionsPage() {
                     </a>
                 </div>
             ) : (
-                <div className="grid gap-4">
+                <div ref={gridRef} className="grid gap-4">
                     {commissions.map((commission) => (
-                        <div key={commission._id} className="card bg-base-200 shadow-md">
+                        <div key={commission._id} className="card bg-base-200 shadow-md commission-card">
                             <div className="card-body">
                                 <div className="flex justify-between items-start">
                                     <div className="flex-1">
