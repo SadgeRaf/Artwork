@@ -30,7 +30,7 @@ export async function GET(request) {
 
         let query = {};
         if (user.role !== 'admin') {
-            query.userId = user._id.toString();
+            query.email = user.email;
         }
 
         const commissions = await commissionCollection.find(query).toArray();

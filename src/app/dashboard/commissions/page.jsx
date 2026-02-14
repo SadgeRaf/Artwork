@@ -34,6 +34,7 @@ export default function MyCommissionsPage() {
             }
             
             const data = await response.json();
+             console.log(data)
             setCommissions(data);
         } catch (error) {
             setError(error.message);
