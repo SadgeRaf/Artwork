@@ -6,6 +6,7 @@ import { Providers } from "./Provider";
 import ToastProvider from "../components/ToastProvider";
 import { ThemeProvider } from "../components/ThemeProvider";
 import BotpressChat from "../components/BotpressChat";
+import SmoothScroll from "../components/SmoothScroll";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -123,7 +124,8 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider>
+        <SmoothScroll>
+          <ThemeProvider>
           <Providers>
             <div className="min-h-screen flex flex-col">
               <Navbar></Navbar>
@@ -136,6 +138,7 @@ export default function RootLayout({ children }) {
           </Providers>
           <BotpressChat></BotpressChat>
         </ThemeProvider>
+        </SmoothScroll>
       </body>
     </html>
   );

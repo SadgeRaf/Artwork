@@ -19,6 +19,9 @@ export default function Footer() {
         <Link href="/commission" className="link link-hover hover:text-primary transition-colors duration-300">
           Commission
         </Link>
+        <Link href="/contact" className="link link-hover hover:text-primary transition-colors duration-300">
+          Contact Us
+        </Link>
       </nav>
 
       {/* Social Links */}

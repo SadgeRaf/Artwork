@@ -7,7 +7,7 @@ const commissionCollection = dbConnect('commissions')
 
 export async function POST(request) {
     const query = await request.json();
-    const { user } = requireAuth();
+    const { user } = await requireAuth();
 
     if (!user) {
         return Response.json({ error: "login first"}, { status: 403 })
@@ -16,6 +16,7 @@ export async function POST(request) {
             ...query,
             createdAt: new Date(),
             status: 'pending',
+            userId: user._id.toString()
         }
         const result = await commissionCollection.insertOne(commissionData)
         return Response.json(result);

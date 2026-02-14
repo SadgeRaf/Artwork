@@ -2,8 +2,13 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { fadeInUp, scaleIn } from '../../lib/animations';
+import { toast } from 'react-toastify';
+import { useTheme } from '../../components/ThemeProvider';
 
 export default function CommissionPage() {
+  const { theme } = useTheme(); // Get theme from your context
+  const isDark = theme === 'dark';
+  
   const formRef = useRef(null);
   const titleRef = useRef(null);
   
@@ -21,12 +26,18 @@ export default function CommissionPage() {
     deadline: ''
   });
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState('');
+  const [mounted, setMounted] = useState(false);
+
+  // Handle hydration mismatch
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setMessage('');
+
+    const loadingToast = toast.loading('Submitting your commission request...');
 
     try {
       const response = await fetch('/api/commission', {
@@ -40,7 +51,13 @@ export default function CommissionPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessage('✓ Commission submitted successfully!');
+        toast.update(loadingToast, {
+          render: '✓ Commission submitted successfully!',
+          type: 'success',
+          isLoading: false,
+          autoClose: 5000,
+        });
+
         setFormData({
           name: '',
           email: '',
@@ -50,10 +67,20 @@ export default function CommissionPage() {
           deadline: ''
         });
       } else {
-        setMessage(`Error: ${data.error}`);
+        toast.update(loadingToast, {
+          render: `Error: ${data.error || 'Something went wrong'}`,
+          type: 'error',
+          isLoading: false,
+          autoClose: 5000,
+        });
       }
     } catch (error) {
-      setMessage('Error submitting commission');
+      toast.update(loadingToast, {
+        render: 'Error submitting commission. Please try again.',
+        type: 'error',
+        isLoading: false,
+        autoClose: 5000,
+      });
     } finally {
       setLoading(false);
     }
@@ -66,23 +93,42 @@ export default function CommissionPage() {
     });
   };
 
-  
-    return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  if (!mounted) return null; // Prevent hydration mismatch
+
+  return (
+    <div className={`min-h-screen py-12 px-4 sm:px-6 lg:px-8 transition-colors duration-300 ${
+      isDark ? 'bg-gray-900' : 'bg-gray-50'
+    }`}>
       <div className="max-w-3xl mx-auto">
-        <h1 ref={titleRef} className="text-3xl font-bold text-gray-900 mb-8">Request a Commission</h1>
+        {/* Header Section */}
+        <div className="text-center mb-8">
+          <h1 ref={titleRef} className={`text-4xl md:text-5xl font-bold mb-4 ${
+            isDark ? 'text-white' : 'text-gray-900'
+          }`}>
+            Request a Commission
+          </h1>
+          <p className={`text-lg ${
+            isDark ? 'text-gray-300' : 'text-gray-600'
+          }`}>
+            Tell me about your project and I'll get back to you within 24 hours
+          </p>
+        </div>
 
-        {message && (
-          <div className={`p-4 mb-6 rounded-lg ${message.includes('✓') ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
-            {message}
-          </div>
-        )}
-
-        <form ref={formRef} onSubmit={handleSubmit} className="bg-white shadow-lg rounded-lg p-6 space-y-6">
+        {/* Form */}
+        <form 
+          ref={formRef} 
+          onSubmit={handleSubmit} 
+          className={`shadow-xl rounded-2xl p-6 md:p-8 space-y-6 ${
+            isDark ? 'bg-gray-800' : 'bg-white'
+          }`}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Name *
+            {/* Name Field */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Name <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -90,13 +136,23 @@ export default function CommissionPage() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="John Doe"
+                className={`w-full px-4 py-3 border rounded-xl 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         transition-all duration-200 outline-none ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                }`}
               />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Email *
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
+                Email <span className="text-red-500">*</span>
               </label>
               <input
                 type="email"
@@ -104,33 +160,61 @@ export default function CommissionPage() {
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="john@example.com"
+                className={`w-full px-4 py-3 border rounded-xl 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         transition-all duration-200 outline-none ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                    : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                }`}
               />
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+          {/* Project Type */}
+          <div className="space-y-2">
+            <label className={`block text-sm font-semibold ${
+              isDark ? 'text-gray-300' : 'text-gray-700'
+            }`}>
               Project Type
             </label>
-            <select
-              name="projectType"
-              value={formData.projectType}
-              onChange={handleChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">Select a project type</option>
-              <option value="character">Character Design</option>
-              <option value="illustration">Illustration</option>
-              <option value="logo">Logo Design</option>
-              <option value="web">Web Design</option>
-              <option value="other">Other</option>
-            </select>
+            <div className="relative">
+              <select
+                name="projectType"
+                value={formData.projectType}
+                onChange={handleChange}
+                className={`w-full px-4 py-3 border rounded-xl appearance-none
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         transition-all duration-200 outline-none cursor-pointer ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-gray-50 border-gray-300 text-gray-900'
+                }`}
+              >
+                <option value="" className={isDark ? 'bg-gray-700' : 'bg-white'}>Select a project type</option>
+                <option value="character" className={isDark ? 'bg-gray-700' : 'bg-white'}>Character Design</option>
+                <option value="illustration" className={isDark ? 'bg-gray-700' : 'bg-white'}>Illustration</option>
+                <option value="logo" className={isDark ? 'bg-gray-700' : 'bg-white'}>Logo Design</option>
+                <option value="web" className={isDark ? 'bg-gray-700' : 'bg-white'}>Web Design</option>
+                <option value="other" className={isDark ? 'bg-gray-700' : 'bg-white'}>Other</option>
+              </select>
+              <div className={`absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none ${
+                isDark ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description *
+          {/* Description */}
+          <div className="space-y-2">
+            <label className={`block text-sm font-semibold ${
+              isDark ? 'text-gray-300' : 'text-gray-700'
+            }`}>
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
               name="description"
@@ -138,28 +222,51 @@ export default function CommissionPage() {
               onChange={handleChange}
               required
               rows={4}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Describe your project in detail..."
+              className={`w-full px-4 py-3 border rounded-xl 
+                       focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                       transition-all duration-200 outline-none resize-none ${
+                isDark 
+                  ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                  : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+              }`}
+              placeholder="Describe your project in detail... Include references, style preferences, etc."
             />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Budget */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Budget
               </label>
-              <input
-                type="text"
-                name="budget"
-                value={formData.budget}
-                onChange={handleChange}
-                placeholder="$"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
+              <div className="relative">
+                <span className={`absolute left-3 top-1/2 -translate-y-1/2 font-medium ${
+                  isDark ? 'text-gray-400' : 'text-gray-500'
+                }`}>$</span>
+                <input
+                  type="text"
+                  name="budget"
+                  value={formData.budget}
+                  onChange={handleChange}
+                  placeholder="Enter your budget"
+                  className={`w-full pl-8 pr-4 py-3 border rounded-xl 
+                           focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                           transition-all duration-200 outline-none ${
+                    isDark 
+                      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+                      : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
+                  }`}
+                />
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+            {/* Deadline */}
+            <div className="space-y-2">
+              <label className={`block text-sm font-semibold ${
+                isDark ? 'text-gray-300' : 'text-gray-700'
+              }`}>
                 Deadline
               </label>
               <input
@@ -167,21 +274,48 @@ export default function CommissionPage() {
                 name="deadline"
                 value={formData.deadline}
                 onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full px-4 py-3 border rounded-xl 
+                         focus:ring-2 focus:ring-blue-500 focus:border-transparent
+                         transition-all duration-200 outline-none ${
+                  isDark 
+                    ? 'bg-gray-700 border-gray-600 text-white' 
+                    : 'bg-gray-50 border-gray-300 text-gray-900'
+                }`}
               />
             </div>
           </div>
 
+          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700
+                     text-white font-semibold py-4 px-6 rounded-xl 
+                     transition-all duration-200 transform hover:scale-[1.02] active:scale-[0.98]
+                     disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100
+                     shadow-lg hover:shadow-xl"
           >
-            {loading ? 'Submitting...' : 'Submit Commission Request'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Submitting...
+              </span>
+            ) : (
+              'Submit Commission Request'
+            )}
           </button>
+
+          {/* Form Footer Note */}
+          <p className={`text-sm text-center mt-4 ${
+            isDark ? 'text-gray-400' : 'text-gray-500'
+          }`}>
+            <span className="text-red-500">*</span> Required fields
+          </p>
         </form>
       </div>
     </div>
-    );
-
+  );
 }

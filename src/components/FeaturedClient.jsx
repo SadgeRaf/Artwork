@@ -48,7 +48,7 @@ export default function FeaturedClient({ artworks }) {
   return (
     <section 
       ref={sectionRef}
-      className="relative py-24 px-4 md:px-8 overflow-hidden bg-gradient-to-b from-white to-gray-50"
+      className="relative py-24 px-4 md:px-8 overflow-hidden"
     >
       {/* Decorative background elements */}
       <div className="absolute inset-0 pointer-events-none">

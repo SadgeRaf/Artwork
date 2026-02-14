@@ -18,7 +18,7 @@ export default function DashboardPage() {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch('/api/user')
+        const res = await fetch('/api/user/profile')
         const data = await res.json()
         
         if (data.success) {
