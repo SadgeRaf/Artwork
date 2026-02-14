@@ -1,6 +1,7 @@
 import { error } from "console";
 import { requireAuth } from "../../../lib/auth-utils";
 import { dbConnect } from "../../../lib/dbConnect";
+import { ObjectId } from "mongodb";
 
 const commissionCollection = dbConnect('commissions')
 
@@ -34,6 +35,65 @@ export async function GET(request) {
         const commissions = await commissionCollection.find(query).toArray();
         return Response.json(commissions);
     } catch (error) {
+        return Response.json({ error: error.message }, { status: 401 });
+    }
+}
+
+export async function PUT(request) {
+    try {
+        const { user } = await requireAuth()
+        const { commissionId, status } = await request.json();
+
+        // Validate status
+        const validStatuses = ['pending', 'in-progress', 'completed', 'cancelled'];
+        if (!validStatuses.includes(status)) {
+            return Response.json({ 
+                error: 'Invalid status. Must be: pending, in-progress, completed, or cancelled' 
+            }, { status: 400 });
+        }
+
+        // Find the commission first
+        const commission = await commissionCollection.findOne({ 
+            _id: new ObjectId(commissionId) 
+        });
+
+        if (!commission) {
+            return Response.json({ 
+                error: 'Commission not found' 
+            }, { status: 404 });
+        }
+
+        // Check permissions
+        if (user.role !== 'admin' && commission.userId !== user._id.toString()) {
+            return Response.json({ 
+                error: 'You do not have permission to update this commission' 
+            }, { status: 403 });
+        }
+
+        // Update the commission
+        const result = await commissionCollection.updateOne(
+            { _id: new ObjectId(commissionId) },
+            { 
+                $set: { 
+                    status,
+                    updatedAt: new Date()
+                } 
+            }
+        );
+
+        if (result.modifiedCount === 0) {
+            return Response.json({ 
+                error: 'Failed to update commission' 
+            }, { status: 500 });
+        }
+
+        return Response.json({ 
+            success: true, 
+            message: `Commission status updated to ${status}` 
+        });
+
+    } catch (error) {
+        console.error('Update commission error:', error);
         return Response.json({ error: error.message }, { status: 401 });
     }
 }

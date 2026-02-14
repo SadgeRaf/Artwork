@@ -5,6 +5,7 @@ import React from 'react'
 import { useAuth } from '../app/hooks/useAuth'
 import Logo from './Logo'
 import NavLink from './buttons/NavLink'
+import ThemeToggle from './ThemeToggle'
 
 export default function Navbar() {
   const { isAuthenticated, logout } = useAuth()
@@ -42,6 +43,7 @@ export default function Navbar() {
       </div>
       
       <div className="navbar-end gap-2">
+        <ThemeToggle />
         {isAuthenticated ? (
           <div className="flex items-center gap-2">
             <button 

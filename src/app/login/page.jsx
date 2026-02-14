@@ -71,13 +71,24 @@ export default function Login() {
     setShowPassword(!showPassword);
   };
 
+  const handleAdminLogin = () => {
+    setEmail('admin@gmail.com');
+    setPassword('Iamtheadmin');
+    // Optional: Automatically submit after a short delay
+    // setTimeout(() => {
+    //   document.getElementById('login-form').dispatchEvent(
+    //     new Event('submit', { cancelable: true, bubbles: true })
+    //   );
+    // }, 100);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-base-200 p-4">
       <div ref={cardRef} className="card bg-base-100 shadow-xl w-full max-w-md">
         <div className="card-body">
           <h2 ref={titleRef} className="card-title text-2xl mb-6 justify-center">Login</h2>
           
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form id="login-form" onSubmit={handleSubmit} className="space-y-4">
             {/* Email Input */}
             <div className="form-control">
               <label className="label">
@@ -144,6 +155,18 @@ export default function Login() {
                 disabled={isLoading}
               >
                 {isLoading ? 'Logging in...' : 'Login'}
+              </button>
+              
+              {/* Admin Login Button - Quick Fill */}
+              <button 
+                type="button" 
+                onClick={handleAdminLogin}
+                className="btn btn-secondary btn-outline w-full mt-2"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Admin Login (Quick Fill)
               </button>
               
               {/* Google Sign In Button */}

@@ -17,40 +17,56 @@ const NextJsCarousel = () => {
                 swipeable={true}
                 showThumbs={false}
             >
-                <div>
-                    <Image src="/3.png" alt="image1" width={300} height={300} />
-
-                    <p className="legend">
-                        Image 1
-                    </p>
+                <div className="relative h-screen w-full flex items-center justify-center bg-black/10">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src="/3.png" 
+                            alt="image1" 
+                            fill
+                            className="object-contain p-4"
+                            priority
+                        />
+                    </div>
                 </div>
-                <div>
-                    <Image src="/2.png" alt="image1" fill />
-
-                    <p className="legend">
-                        Image 2
-                    </p>
+                <div className="relative h-screen w-full flex items-center justify-center bg-black/10">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src="/2.png" 
+                            alt="image2" 
+                            fill
+                            className="object-contain p-4"
+                        />
+                    </div>
                 </div>
-                <div>
-                    <Image src="/1.png" alt="image1" fill />
-
-                    <p className="legend">
-                        Image 3
-                    </p>
+                <div className="relative h-screen w-full flex items-center justify-center bg-black/10">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src="/1.png" 
+                            alt="image2" 
+                            fill
+                            className="object-contain p-4"
+                        />
+                    </div>
                 </div>
-                <div>
-                    <Image src="/4.png" alt="image1" fill />
-
-                    <p className="legend">
-                        Image 4
-                    </p>
+                <div className="relative h-screen w-full flex items-center justify-center bg-black/10">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src="/4.png" 
+                            alt="image2" 
+                            fill
+                            className="object-contain p-4"
+                        />
+                    </div>
                 </div>
-                <div>
-                    <Image src="/5.png" alt="image1" fill />
-
-                    <p className="legend">
-                        Image 5
-                    </p>
+                <div className="relative h-screen w-full flex items-center justify-center bg-black/10">
+                    <div className="relative w-full h-full flex items-center justify-center">
+                        <Image 
+                            src="/5.png" 
+                            alt="image2" 
+                            fill
+                            className="object-contain p-4"
+                        />
+                    </div>
                 </div>
             </Carousel>
         </div>

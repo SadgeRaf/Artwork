@@ -4,6 +4,8 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { Providers } from "./Provider";
 import ToastProvider from "../components/ToastProvider";
+import { ThemeProvider } from "../components/ThemeProvider";
+import BotpressChat from "../components/BotpressChat";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -107,20 +109,33 @@ export default function RootLayout({ children }) {
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              try {
+                const theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+              } catch (e) {}
+            `,
+          }}
+        />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers>
-          <div className="min-h-screen flex flex-col">
-            <Navbar></Navbar>
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer></Footer>
-          </div>
-          <ToastProvider />
-        </Providers>
+        <ThemeProvider>
+          <Providers>
+            <div className="min-h-screen flex flex-col">
+              <Navbar></Navbar>
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer></Footer>
+            </div>
+            <ToastProvider />
+          </Providers>
+          <BotpressChat></BotpressChat>
+        </ThemeProvider>
       </body>
     </html>
   );

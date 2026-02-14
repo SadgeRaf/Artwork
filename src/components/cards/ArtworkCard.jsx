@@ -25,11 +25,11 @@ const ArtworkCard = ({ artwork }) => {
 
     return (
         <Link href={`/artwork/${_id}`} className="hover-3d my-12 mx-2 cursor-pointer block">
-            {/* 3D Card */}
-            <div ref={cardRef} className="card w-96 bg-black text-white bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)] bg-size-[4.95em_4.95em]">
+            {/* 3D Card - Made wider (changed from w-96 to w-[400px] or w-full) */}
+            <div ref={cardRef} className="card w-full max-w-md bg-black text-white bg-[radial-gradient(circle_at_bottom_left,#ffffff04_35%,transparent_36%),radial-gradient(circle_at_top_right,#ffffff04_35%,transparent_36%)] bg-size-[4.95em_4.95em]">
                 
-                {/* Image Section */}
-                <figure className="relative h-48 w-full">
+                {/* Image Section - Made taller to match proportions */}
+                <figure className="relative h-56 w-full">
                     {image ? (
                         <Image 
                             src={image} 
