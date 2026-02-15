@@ -107,17 +107,17 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <FaUser />
             </div>
-            <h2 className="text-xl font-semibold">Profile</h2>
+            <h2 className="text-xl font-semibold text-gray-500">Profile</h2>
           </div>
           
           <div className="space-y-3 mb-6">
             <div className="flex justify-between items-center py-2 border-b border-gray-50">
               <span className="text-gray-500">Name</span>
-              <span className="font-medium">{userData?.name || session?.user?.name || 'Not set'}</span>
+              <span className="font-medium text-gray-500">{userData?.name || session?.user?.name || 'Not set'}</span>
             </div>
             <div className="flex justify-between items-center py-2 border-b border-gray-50">
               <span className="text-gray-500">Email</span>
-              <span className="font-medium">{session?.user?.email}</span>
+              <span className="font-medium text-gray-500">{session?.user?.email}</span>
             </div>
             <div className="flex justify-between items-center py-2">
               <span className="text-gray-500">Account type</span>
@@ -136,7 +136,7 @@ export default function DashboardPage() {
             <div className="w-10 h-10 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
               <FaClock />
             </div>
-            <h2 className="text-xl font-semibold">Recent Commissions</h2>
+            <h2 className="text-xl font-semibold text-gray-500">Recent Commissions</h2>
           </div>
 
           {stats.commissions > 0 ? (
