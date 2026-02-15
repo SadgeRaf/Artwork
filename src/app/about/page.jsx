@@ -73,7 +73,7 @@ export default function About() {
       <section ref={philosophyRef} className="py-20 bg-gray-50 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold mb-4">How I Work</h2>
+            <h2 className="text-4xl font-bold mb-4 text-gray-600">How I Work</h2>
             <div className="w-20 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto rounded-full"></div>
           </div>
           
@@ -84,7 +84,7 @@ export default function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3">Passion First</h3>
+              <h3 className="text-xl font-bold mb-3 text-gray-600">Passion First</h3>
               <p className="text-gray-600 leading-relaxed">
                 I only take projects I'm genuinely excited about. This ensures the best results for both of us.
               </p>
@@ -96,7 +96,7 @@ export default function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3">Clear Communication</h3>
+              <h3 className="text-xl font-bold mb-3 text-gray-600">Clear Communication</h3>
               <p className="text-gray-600 leading-relaxed">
                 Regular updates and honest feedback. No surprises, just transparency throughout the process.
               </p>
@@ -108,7 +108,7 @@ export default function About() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
-              <h3 className="text-xl font-bold mb-3">Quality Assurance</h3>
+              <h3 className="text-xl font-bold mb-3 text-gray-600">Quality Assurance</h3>
               <p className="text-gray-600 leading-relaxed">
                 Multiple revisions included until you're completely satisfied with the result.
               </p>

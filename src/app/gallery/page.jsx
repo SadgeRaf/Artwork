@@ -6,6 +6,7 @@ import SearchBar from '../../components/searchbar/SearchBar';
 import { useSearchParams } from 'next/navigation';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { fadeInUp, staggerChildren } from '../../lib/animations';
+import GalleryLoading from './loading';
 
 // Items per page for pagination
 const ITEMS_PER_PAGE = 4;
@@ -104,16 +105,12 @@ const Page = () => {
         }
     }, [filteredArtworks, loadMoreArtworks]);
 
-    // Loading state
     if (loading && allArtworks.length === 0) {
         return (
             <div className="min-h-screen">
                 <h1 className='text-purple-500 font-extrabold flex justify-center mb-6 text-3xl'>My Works!!!</h1>
                 <SearchBar />
-                <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500 mx-auto"></div>
-                    <p className="text-gray-600 text-lg mt-4">Loading artworks...</p>
-                </div>
+                <GalleryLoading></GalleryLoading>
             </div>
         );
     }
